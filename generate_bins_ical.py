@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-from playwright.sync_api import sync_playwright
+import requests
+from bs4 import BeautifulSoup
 from icalendar import Calendar, Event
 from datetime import datetime, timedelta
 import pytz
@@ -8,25 +9,22 @@ import re
 URL = "https://www.eastdunbarton.gov.uk/services/a-z-of-services/bins-waste-and-recycling/bins-and-recycling/collections/?uprn=132020540"
 tz = pytz.timezone("Europe/London")
 
+# Fetch page
+response = requests.get(URL)
+response.raise_for_status()
+soup = BeautifulSoup(response.text, "html.parser")
+
 cal = Calendar()
 cal.add('prodid', '-//EDC Bin Calendar//')
 cal.add('version', '2.0')
 
-with sync_playwright() as p:
-    browser = p.chromium.launch(headless=True)
-    page = browser.new_page()
-    page.goto(URL)
-    page.wait_for_timeout(5000)  # wait for JS to load
+# Get all text and split into lines
+text = soup.get_text(separator="\n")
 
-    # Grab all visible text under the main content
-    text = page.inner_text("main")
-
-    browser.close()
-
-# Extract lines ending with weekday + date
+# Match lines ending with a weekday and date (allow extra text before weekday)
 for line in text.splitlines():
     line = line.strip()
-    match = re.search(r"(.+?)\s+(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s+(\d{2}\s+\w+\s+\d{4})$", line)
+    match = re.search(r"(.+?)\s+(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday),\s+(\d{2}\s+\w+\s+\d{4})", line)
     if match:
         bin_name = match.group(1).strip()
         date_str = f"{match.group(2)}, {match.group(3)}"
@@ -45,7 +43,7 @@ for line in text.splitlines():
         event.add('url', URL)
         cal.add_component(event)
 
-# Write to ICS
+# Write ICS
 with open("bins.ics", "wb") as f:
     f.write(cal.to_ical())
 
