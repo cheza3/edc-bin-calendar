@@ -2,7 +2,7 @@ name: Update Bin Calendar
 
 on:
   schedule:
-    - cron: '0 1 * * *'   # Runs daily at 01:00 UTC
+    - cron: '0 1 * * *'  # daily at 01:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -21,23 +21,13 @@ jobs:
         with:
           python-version: '3.10'
 
-      - name: Install Chromium
+      - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y chromium-browser chromium-chromedriver
-
-      - name: Install Python deps
-        run: |
-          pip install uk_bin_collection selenium icalendar
+          pip install requests beautifulsoup4 icalendar pytz
 
       - name: Generate iCal
-        env:
-          CHROME_BIN: /usr/bin/chromium
         run: |
-          uk_bin_collection \
-            EastDunbartonshireCouncil \
-            "https://www.eastdunbarton.gov.uk/services/a-z-of-services/bins-waste-and-recycling/bins-and-recycling/collections/?uprn=132020540" \
-            > bins.ics
+          python generate_bins_ical.py
 
       - name: Commit & push
         run: |
