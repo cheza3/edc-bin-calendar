@@ -2,7 +2,7 @@ name: Update Bin Calendar
 
 on:
   schedule:
-    - cron: '0 1 * * *'  # Runs daily at 01:00 UTC
+    - cron: '0 1 * * *'
   workflow_dispatch:
 
 permissions:
@@ -23,12 +23,10 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install icalendar pytz playwright
-          playwright install
+          pip install requests beautifulsoup4 icalendar pytz
 
       - name: Generate iCal
-        run: |
-          python generate_bins_ical.py
+        run: python generate_bins_ical.py
 
       - name: Commit & push
         run: |
