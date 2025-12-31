@@ -2,7 +2,7 @@ name: Update Bin Calendar
 
 on:
   schedule:
-    - cron: '0 1 * * *'  # daily at 01:00 UTC
+    - cron: '0 1 * * *'  # Runs daily at 01:00 UTC
   workflow_dispatch:
 
 permissions:
@@ -13,7 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up Python
@@ -23,7 +23,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install requests beautifulsoup4 icalendar pytz
+          sudo apt-get update
+          sudo apt-get install -y chromium chromium-driver
+          pip install selenium icalendar pytz
 
       - name: Generate iCal
         run: |
