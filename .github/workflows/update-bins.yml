@@ -1,0 +1,46 @@
+name: Update Bin Calendar
+
+on:
+  schedule:
+    - cron: '0 1 * * *'   # 01:00 UK summer / 01:00 UTC winter-ish
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y chromium-browser chromium-chromedriver
+
+      - name: Install Python deps
+        run: |
+          pip install uk_bin_collection selenium icalendar
+
+      - name: Generate iCal
+        env:
+          CHROME_BIN: /usr/bin/chromium-browser
+        run: |
+          uk_bin_collection \
+            EastDunbartonshireCouncil \
+            "https://www.eastdunbarton.gov.uk/services/a-z-of-services/bins-waste-and-recycling/bins-and-recycling/collections/?uprn=https://www.eastdunbarton.gov.uk/services/a-z-of-services/bins-waste-and-recycling/bins-and-recycling/collections/?uprn=132020540&m=CfDJ8NH03gsfdeVFlP61mROFUWd8FCFwfatyzh3TGarEg5KiJlVT5WYMBNh79GvydN8UaJTvs7Fp-qSOgBdkD8tq__iLes7ad0kP9wQtbpShz7GWSjmYi5oJSZVZaDBMBmucZ6XnhYahkVZ1z6tbe8eg0GE" \
+            -o bins.ics
+
+      - name: Commit changes
+        run: |
+          git config user.name "BinBot"
+          git config user.email "bot@github.com"
+          git add bins.ics
+          git commit -m "Update bin calendar" || exit 0
+          git push
