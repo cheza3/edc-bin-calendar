@@ -1,7 +1,3 @@
-
-Here’s the version tailored for your page:
-
-```yaml
 name: Update Bin Calendar
 
 on:
