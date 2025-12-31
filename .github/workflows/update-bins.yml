@@ -31,13 +31,11 @@ jobs:
         run: |
           python generate_bins_ical.py
 
-  - name: Commit & push
-  run: |
-    git config user.name "BinBot"
-    git config user.email "bot@github.com"
-    git add bins.ics
-    git commit -m "Update bin calendar" || exit 0
-    git pull --rebase origin main
-    git push origin main
-
-
+      - name: Commit & push
+        run: |
+          git config user.name "BinBot"
+          git config user.email "bot@github.com"
+          git add bins.ics
+          git commit -m "Update bin calendar" || exit 0
+          git pull --rebase origin main
+          git push origin main
