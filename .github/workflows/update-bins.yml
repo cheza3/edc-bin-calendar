@@ -32,12 +32,12 @@ jobs:
 
       - name: Generate iCal
         env:
-          CHROME_BIN: /usr/bin/chromium-browser
+          CHROME_BIN: /usr/bin/chromium
         run: |
           uk_bin_collection \
             EastDunbartonshireCouncil \
-            "https://www.eastdunbarton.gov.uk/services/a-z-of-services/bins-waste-and-recycling/bins-and-recycling/collections/?uprn=132020540&m=CfDJ8NH03gsfdeVFlP61mROFUWd8FCFwfatyzh3TGarEg5KiJlVT5WYMBNh79GvydN8UaJTvs7Fp-qSOgBdkD8tq__iLes7ad0kP9wQtbpShz7GWSjmYi5oJSZVZaDBMBmucZ6XnhYahkVZ1z6tbe8eg0GE" \
-            -o bins.ics
+            "https://www.eastdunbarton.gov.uk/services/a-z-of-services/bins-waste-and-recycling/bins-and-recycling/collections/?uprn=132020540" \
+            > bins.ics
 
       - name: Commit & push
         run: |
